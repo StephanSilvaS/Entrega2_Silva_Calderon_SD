@@ -7,11 +7,11 @@ import io.ably.lib.types.AblyException;
 
 
 
-@SpringBootApplication
+//@SpringBootApplication
 public class ProducerApplication {
 
 	public static void main(String[] args) throws AblyException {
-		SpringApplication.run(ProducerApplication.class, args);
+		//SpringApplication.run(ProducerApplication.class, args);
 		ProducerService producerService = new ProducerService();
 		producerService.ablyAPI();
 	}
