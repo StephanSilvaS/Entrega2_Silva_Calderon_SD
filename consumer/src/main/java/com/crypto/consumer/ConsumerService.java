@@ -12,6 +12,13 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import org.apache.kafka.common.serialization.StringDeserializer;
+
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.session.Session;
+
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.cql.Statement;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,13 +43,26 @@ public class ConsumerService{
         consumer.subscribe(Collections.singletonList(TOPIC_NAME));
 
         // Consumo de mensajes
-        try {
+        try (CqlSession session = CqlSession.builder()
+                .withKeyspace("crypto")
+                .build()){
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
                     String message = record.value();
                     System.out.println("Mensaje recibido: " + message);
                     // Procesa el mensaje desde la API
+
+                    // Process the Kafka record
+                    String key = record.key();
+                    String value = record.value();
+
+                    // Insert data into Cassandra
+                    Statement<?> statement = SimpleStatement.builder("INSERT INTO my_table (key, value) VALUES (?, ?)")
+                            .addPositionalValue(key)
+                            .addPositionalValue(value)
+                            .build();
+                    session.execute(statement);
                 }
             }
         } catch (Exception e) {

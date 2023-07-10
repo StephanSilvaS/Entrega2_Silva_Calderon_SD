@@ -1,9 +1,10 @@
 package com.crypto.consumer;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
+// import com.datastax.oss.driver.api.core.Cluster;
+import com.datastax.oss.driver.api.core.session.Session;
 
 public class ConsumerConnector {
+    /*
     private Cluster cluster;
     private Session session;
 
@@ -23,4 +24,5 @@ public class ConsumerConnector {
     public void insertData(String key, String value) {
         session.execute("INSERT INTO your_table (key, value) VALUES (?, ?)", key, value);
     }
+    */
 }
