@@ -45,24 +45,29 @@ public class ConsumerService{
         // Consumo de mensajes
         try (CqlSession session = CqlSession.builder()
                 .withKeyspace("crypto")
-                .build()){
+                .build()) {
+
+            int i = 0;
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
-                    String message = record.value();
-                    System.out.println("Mensaje recibido: " + message);
+                    String valor = record.value();
+                    System.out.println("Mensaje recibido: " + valor);
                     // Procesa el mensaje desde la API
-
+                    
                     // Process the Kafka record
-                    String key = record.key();
-                    String value = record.value();
+                    String id = record.key();
+
+                    System.out.println("\n\n\n\n\n\n\nValor de la key: " + id);
+                    // Integer id_int = Integer.parseInt(id);
 
                     // Insert data into Cassandra
-                    Statement<?> statement = SimpleStatement.builder("INSERT INTO my_table (key, value) VALUES (?, ?)")
-                            .addPositionalValue(key)
-                            .addPositionalValue(value)
+                    Statement<?> statement = SimpleStatement.builder("INSERT INTO bitcoin (id,valor) VALUES (?, ?)")
+                            .addPositionalValue(i)
+                            .addPositionalValue(valor)
                             .build();
                     session.execute(statement);
+                    i++;
                 }
             }
         } catch (Exception e) {
